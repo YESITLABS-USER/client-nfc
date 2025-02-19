@@ -157,6 +157,9 @@ const CoupansManagement = () => {
                   <th>Campaign name</th>
                   <th>Campaign ID</th>
                   <th>Campaign Status</th>
+                  <th>Valid scan frequency</th>
+                  <th>Select time unit</th>
+                  <th>Valid scan qty</th>
                   <th>Coupon Type:</th>
                   <th>Enter value (€)</th>
                   <th>Product restrictions</th>
@@ -185,6 +188,9 @@ const CoupansManagement = () => {
                         <td>{item?.campaign_name}</td>
                         <td>{item?.campaign_id}</td>
                         <td>{item?.campaign_status ? "Active" : "Deactive"}</td>
+                        <td>{item?.valid_scan_freq}</td>
+                        <td>{item?.select_time_unit}</td>
+                        <td>{item?.valid_scan_qty}</td>
                         <td>{item?.coupon_type}</td>
                         <td>{item?.value}</td>
                         <td>

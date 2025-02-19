@@ -23,7 +23,7 @@ const CreateEditCoupan = () => {
   const [clientId, setClientId] = useState(null);
   const [clientLocation, setClientLocation] = useState(null);
   const [finalCampaignId, setFinalCampaignId] = useState("");
-  const [scanType, setScanType] = useState(isEditMode ? data?.validity_start_date_from_valid_scan : 0);
+  const [scanType, setScanType] = useState(isEditMode ? data?.validity_start_date_from_valid_scan : 1);
   const [selectColor, setSelectColor] = useState('#000000')
   const [selectedCouponType, setSelectedCouponType] = useState("");
   const [usageLimit, setUsageLimit] = useState(isEditMode ? data?.usages_limit_no_limit == 1 ? 1 : 0 : 0);
@@ -69,7 +69,7 @@ const CreateEditCoupan = () => {
       setFieldValue("color_selection", colorCode);
     }
   };
-
+ 
   const initialValues = {
     id: isEditMode ? data.id : "",
     client_id: isEditMode ? data.client_id : '',
@@ -80,7 +80,7 @@ const CreateEditCoupan = () => {
     campaign_id: isEditMode ? data.campaign_id : '',
     status: isEditMode ? (data.status == 1 ? 1 : 0) : 1,
     campaign_table_id: isEditMode ? data.campaign_table_id : "",
-   
+
     coupon_name:  isEditMode ? data?.coupon_name :"",
     coupon_id: isEditMode ? data?.coupon_id : loyaltyId || "", // Update this line
 
@@ -101,42 +101,61 @@ const CreateEditCoupan = () => {
     other_customization: isEditMode ? data.other_customization : "" ,
     color_selection: isEditMode ? data.color_selection : "#000000",
     is_publish : isEditMode ? data.is_publish : 0,
+
+    infinity_qty: isEditMode ? data?.infinity_qty == 1 ? 1 : 0 : 0,
+    valid_scan_freq: isEditMode ? data?.valid_scan_freq : "",
+    select_time_unit: isEditMode ? data?.select_time_unit : "",
+    valid_scan_qty: isEditMode ? data?.valid_scan_qty : "",
   };
   
   const validationSchema = Yup.object({
-    // client_id: Yup.string().required("Client name is required"),
-    // client_table_id: Yup.string().required("Client location is required"),
-    // campaign_name: Yup.string().required("Campaign name is required"),
-    // status: Yup.string().required("Campaign status is required"),
-    // coupon_name: Yup.string().required("Coupon name is required"),
-    // coupon_type: !selectedCouponType ? Yup.string().required("Coupon type is required") : Yup.string().notRequired(),
+    client_id: Yup.string().required("Client name is required"),
+    client_table_id: Yup.string().required("Client location is required"),
+    campaign_name: Yup.string().required("Campaign name is required"),
+    status: Yup.string().required("Campaign status is required"),
+    coupon_name: Yup.string().required("Coupon name is required"),
+    coupon_type: !selectedCouponType ? Yup.string().required("Coupon type is required") : Yup.string().notRequired(),
     
-    // usages_limit_select_number: usageLimit ? Yup.string().notRequired() : Yup.string().required("Usage number is required"),
-    // usages_limit_select_time_unit: usageLimit ? Yup.string().notRequired() : Yup.string().required("Usage time unit is required"),
+    usages_limit_select_number: usageLimit ? Yup.string().notRequired() : Yup.string().required("Usage number is required"),
+    usages_limit_select_time_unit: usageLimit ? Yup.string().notRequired() : Yup.string().required("Usage time unit is required"),
+    validity_start_date_from_valid_scan:  Yup.string().required("Valid date type is required"),
 
-    // validity_start_date_from_valid_scan: Yup.string().required("Valid date type is required"),
-    // other_customization: Yup.string().required("Other customization is required"),
+    other_customization: Yup.string().required("Other customization is required"),
+
+    valid_scan_freq : Yup.number().required("frequency is required"),
+    select_time_unit: Yup.string().required("Time unit is required"),
+    valid_scan_qty: Yup.number().required("scan quantity is required"),
 
   });
 
 
   const handleSubmit = (values) => {
     const formData = { ...values };
-    
+
     // Clear scan-related fields if a fixed date is selected
-    if (scanType == 1) {
+    if (scanType == 2) {
       formData.validity_select_number = "";
       formData.validity_select_time_unit = "";
-      formData.validity_start_date_from_valid_scan = 1;
+      formData.validity_start_date_from_valid_scan = 2;
     }
   
     // Clear fixed date fields if scan is selected
-    if (scanType == 0) {
+    if (scanType == 1) {
       formData.validity_start_date = "";
       formData.validity_expiration_date = "";
       formData.validity_no_limit = 0;
-      formData.validity_start_date_from_valid_scan = 0;
+      formData.validity_start_date_from_valid_scan = 1;
     }
+
+        
+   if(formData.infinity_qty == 1){
+    formData.validity_select_number = "";
+    formData.validity_select_time_unit = "";
+    formData.validity_start_date_from_valid_scan = 0;
+    formData.validity_start_date = "";
+    formData.validity_expiration_date = "";
+    formData.validity_no_limit = 0;
+ }
   
     if (usageLimit == 1) {
       formData.usages_limit_select_number = "";
@@ -564,10 +583,7 @@ const CreateEditCoupan = () => {
                     <label>
                     <h3>Select Time Unit</h3>
                     <Field as="select" name="select_time_unit" onChange={(e) => {
-                      setSelectedTimeUnit(e.target.value);
                       setFieldValue('select_time_unit', e.target.value);
-                      // Reset end date when time unit changes
-                      setFieldValue('campaign_end_date', null);
                       }}>
                       <option value=""> Select Time Unit </option>
                       <option value="1">Month</option>
@@ -595,6 +611,7 @@ const CreateEditCoupan = () => {
                     <label className="no-expariton-check">
                       <Field type="checkbox" name="infinity_qty" checked={isInfinity} 
                         onChange={(e)=> {
+                        setScanType(isInfinity ? 1 : 0);
                         setIsInfinity(!isInfinity);
                         setFieldValue("infinity_qty", e.target.checked ? 1 : 0);
                       }} />
@@ -660,9 +677,9 @@ const CreateEditCoupan = () => {
                           <Field 
                             type="radio" 
                             name="validity_start_date_from_valid_scan"
-                            value={0}
-                            checked={scanType == 0}  // Added checked prop
-                            onChange={() => setScanType(0)}
+                            value={1} disabled={isInfinity}
+                            checked={scanType == 1}  // Added checked prop
+                            onChange={() => setScanType(1)}
                           />
                           <h3>Start date from valid scan</h3>
                         </label>
@@ -674,8 +691,8 @@ const CreateEditCoupan = () => {
                             type="text" 
                             name="validity_select_number"
                             placeholder="Enter Number" 
-                            disabled={scanType !== 0}
-                            value={scanType == 0 ? values.validity_select_number : ""}
+                            disabled={scanType !== 1 || isInfinity}
+                            value={scanType == 1 ? values.validity_select_number : ""}
                           />
                         </label>
                       </div>
@@ -683,8 +700,8 @@ const CreateEditCoupan = () => {
                       <div className="col-lg-3">
                         <label>
                           <h3>Select Time Unit</h3>
-                          <Field as="select" name="validity_select_time_unit" disabled={scanType !== 0}
-                            value={scanType == 0 ? values.validity_select_time_unit : ""} >
+                          <Field as="select" name="validity_select_time_unit" disabled={scanType !== 1 || isInfinity}
+                            value={scanType == 1 ? values.validity_select_time_unit : ""} >
                             <option value=""> Select Time Unit</option>
                             <option value="month"> Month </option>
                             <option value="day"> Days </option>
@@ -706,9 +723,9 @@ const CreateEditCoupan = () => {
                         <Field 
                           type="radio" 
                           name="validity_start_date_from_valid_scan"
-                          value={1}
-                          checked={scanType == 1}  // Added checked prop
-                          onChange={() => setScanType(1)}
+                          value={2} disabled={isInfinity}
+                          checked={scanType == 2}  // Added checked prop
+                          onChange={() => setScanType(2)}
 
                         />
                         <div className="col-lg-3">
@@ -718,7 +735,7 @@ const CreateEditCoupan = () => {
                               format="dd/MM/yyyy" 
                               oneTap 
                               placeholder="Enter start date"
-                              disabled={scanType !== 1}
+                              disabled={scanType !== 2 || isInfinity}
                               onChange={(date) => setFieldValue("validity_start_date", convertToYYYYMMDD(date))}
                               value={values?.validity_start_date ? new Date(values?.validity_start_date) : null}
                             />  
@@ -733,7 +750,7 @@ const CreateEditCoupan = () => {
                               format="dd/MM/yyyy" 
                               oneTap 
                               placeholder="Enter expiration date"
-                              disabled={scanType !== 1 || values.validity_no_limit}
+                              disabled={scanType !== 2 || values.validity_no_limit}
                               onChange={(date) => setFieldValue("validity_expiration_date", convertToYYYYMMDD(date))}
                               value={values.validity_expiration_date ? new Date(values.validity_expiration_date) : null}
                             />  
@@ -746,7 +763,7 @@ const CreateEditCoupan = () => {
                             <Field
                               type="checkbox"
                               name="validity_no_limit"
-                              disabled={scanType !== 1}
+                              disabled={scanType !== 2 || isInfinity}
 
                               onChange={(e) => {
                                 setFieldValue("validity_no_limit", e.target.checked ? 1 : 0);

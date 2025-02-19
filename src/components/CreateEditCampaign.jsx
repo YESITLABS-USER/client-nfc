@@ -20,7 +20,7 @@ const CreateEditCampaign = () => {
   const [isUnlimited, setIsUnlimited] = useState(false);
   const [coupons, setCoupons] = useState("");
   const [isContinous, setIsContinous] = useState(false);
-  const [isInfinity, setIsInfinity] = useState(false);
+  // const [isInfinity, setIsInfinity] = useState(false);
 
   const { allClients,allCampaignTemplates, uniqueCampaignId,  allClientLocation, client_loading, location_loading, nfcTagsClient } = useSelector((state) => state.campaign);
   const [clientId, setClientId] = useState(null);
@@ -58,7 +58,6 @@ const CreateEditCampaign = () => {
 
   useEffect(() => {
     if (data) {
-      setIsInfinity(data?.infinity_qty == 1);
       setIsUnlimited(data?.amount_of_coupon_unlimented == "1");
       setIsContinous(data?.continuous == 1);
     }
@@ -78,15 +77,15 @@ const CreateEditCampaign = () => {
     client_id: Yup.string().required("Client id is required"),
     client_table_id: Yup.string().required("Client location is required"),
     campaign_name: Yup.string().required("Campaign name is required"),
-    valid_scan_freq : Yup.number().required("frequency is required"),
-    select_time_unit: Yup.string().required("Time unit is required"),
+    // valid_scan_freq : Yup.number().required("frequency is required"),
+    // select_time_unit: Yup.string().required("Time unit is required"),
+    // valid_scan_qty: isInfinity ? Yup.mixed().notRequired() : Yup.number().required("scan quantity is required"),
     amount_of_coupons_num_of_coupons : isUnlimited ? Yup.mixed().notRequired() : Yup.number().required("Coupan number is required"),
-    valid_scan_qty: isInfinity ? Yup.mixed().notRequired() : Yup.number().required("scan quantity is required"),
     campaign_photo: isEditMode ? Yup.mixed().nullable() : Yup.mixed().required("Campaign photo is required"),
     age_restriction : Yup.string().required("Age restriction is required"),
-    campaign_start_date : isInfinity ? Yup.mixed().notRequired() :  Yup.string().required("Start date is required"),
-    campaign_end_date : (isInfinity || isContinous )? Yup.mixed().notRequired() : Yup.string().required("End date is required"),
-    campaign_term_and_condition: isInfinity ? Yup.mixed().notRequired() : Yup.string().required("Campaign description is required"),
+    campaign_start_date : Yup.string().required("Start date is required"),
+    campaign_end_date : (isContinous )? Yup.mixed().notRequired() : Yup.string().required("End date is required"),
+    campaign_term_and_condition: Yup.string().required("Campaign description is required"),
   })
 
   const initialValues = {
@@ -97,11 +96,11 @@ const CreateEditCampaign = () => {
     client_location: isEditMode ? data?.client_location : "",
     campaign_name: isEditMode ? data?.campaign_name : "",
     campaign_id: isEditMode ? data?.campaign_id : "",
-    campaign_status: isEditMode ? data?.campaign_status : 0,
-    valid_scan_freq: isEditMode ? data?.valid_scan_freq : "",
-    select_time_unit: isEditMode ? data?.select_time_unit : "",
-    valid_scan_qty: isEditMode ? data?.valid_scan_qty : "",
-    infinity_qty: isEditMode ? data?.infinity_qty == 1 ? 1 : 0 : 0,
+    // campaign_status: isEditMode ? data?.campaign_status : 0,
+    // infinity_qty: isEditMode ? data?.infinity_qty == 1 ? 1 : 0 : 0,
+    // valid_scan_freq: isEditMode ? data?.valid_scan_freq : "",
+    // select_time_unit: isEditMode ? data?.select_time_unit : "",
+    // valid_scan_qty: isEditMode ? data?.valid_scan_qty : "",
     client_target_user_group_new_user: isEditMode ? data?.client_target_user_group_new_user == 1 ? 1: 0 :  0,
     client_target_user_group_current_user: isEditMode ? data?.client_target_user_group_current_user == 1 ? 1: 0 :  0,
     client_target_user_group_first_time_new_user: isEditMode ? data?.client_target_user_group_first_time_new_user == 1 ? 1: 0 :  0,
@@ -139,11 +138,11 @@ const CreateEditCampaign = () => {
     if (values.age_restriction == "custom") {
       values.age_restriction = `${values.customAgeFrom}-${values.customAgeTo}`;
     }
-    if (values.infinity_qty == 1) {
-      values.campaign_start_date = "";
-      values.campaign_end_date = "";
-      values.campaign_end_date_continuous = 0;
-    }
+    // if (values.infinity_qty == 1) {
+    //   values.campaign_start_date = "";
+    //   values.campaign_end_date = "";
+    //   values.campaign_end_date_continuous = 0;
+    // }
     if (values.amount_of_coupons_amount_of_coupon_unlimented == 1) {
       values.amount_of_coupons_num_of_coupons = "";
     }
@@ -299,7 +298,7 @@ const CreateEditCampaign = () => {
                           />
                         </label>
                       </div>
-                      <div className="col-lg-3">
+                      {/* <div className="col-lg-3">
                         <label>
                           <h3>Campaign Status</h3>
                           <Field as="select" name="campaign_status" 
@@ -310,7 +309,7 @@ const CreateEditCampaign = () => {
                             <option value={0}>Deactive</option>
                           </Field>
                         </label>
-                      </div>
+                      </div> */}
 
                       <h5>Target NFC Tags</h5>
                       <div className="target-NFC-box" style={{ maxHeight: '192px', overflowX: 'auto' }}>
@@ -578,7 +577,6 @@ const CreateEditCampaign = () => {
                               <DatePicker
                                 {...field}
                                 value={field.value ? new Date(field.value) : null}
-                                disabled={isInfinity}
                                 onChange={(date) => {
                                   form.setFieldValue('campaign_start_date', convertToYYYYMMDD(date));
                                   form.setFieldValue('campaign_end_date', null);
@@ -613,7 +611,7 @@ const CreateEditCampaign = () => {
                                 format="dd/MM/yyyy" 
                                 oneTap
                                 placeholder="Select end date" 
-                                disabled={isInfinity || isContinous}
+                                disabled={isContinous}
                                 shouldDisableDate={date => {
                                   const startDate = form.values.campaign_start_date;
                                   if (!startDate || !selectedTimeUnit) return false;
@@ -633,7 +631,7 @@ const CreateEditCampaign = () => {
   
                       <div className="col-lg-3">
                         <label className="no-expariton-check">
-                          <Field type="checkbox" name="campaign_end_date_continuous" disabled={isInfinity} checked={isContinous} onChange={
+                          <Field type="checkbox" name="campaign_end_date_continuous" checked={isContinous} onChange={
                             (e) => {
                               handlecontinuousCheckboxChange(e);
                               setFieldValue("campaign_end_date_continuous", e.target.checked ? 1 : 0);

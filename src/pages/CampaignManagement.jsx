@@ -220,9 +220,9 @@ const CampaignManagement = () => {
                   <th>Total coupons</th>
                   <th>Total Loyalty cards</th>
                   <th>Target NFC Tags</th>
-                  <th>Valid scan frequency</th>
+                  {/* <th>Valid scan frequency</th>
                   <th>Select time unit</th>
-                  <th>Valid scan qty</th>
+                  <th>Valid scan qty</th> */}
                   <th>Target User Groups</th>
                   <th>First-Time User Coupon</th>
                   <th>Amount of coupons</th>
@@ -254,17 +254,17 @@ const CampaignManagement = () => {
                           View
                         </a>
                       </td>
-                      <td>{item?.valid_scan_freq}</td>
+                      {/* <td>{item?.valid_scan_freq}</td>
                       <td>{item?.select_time_unit}</td>
-                      <td>{item?.valid_scan_qty}</td>
+                      <td>{item?.valid_scan_qty}</td> */}
                       <td> {item?.client_target_user_group_new_user && "New User" || item?.client_target_user_group_current_user && "Current User" || (item?.client_target_user_group_new_user && item?.client_target_user_group_current_user) && "New and Current " || ""}</td>
 
                       <td>{item?.client_target_user_group_first_time_new_user ? "Yes" : "No"}</td>
 
                       <td>{item?.total_coupon_count}</td>
                       <td>
-                        {!item?.infinity_qty ? item?.continuous ? `${formatDate(item?.campaign_start_date)} - No Expiration` 
-                          : `${formatDate(item?.campaign_start_date)} - ${formatDate(item?.campaign_end_date)}` : "No - Expiration"} 
+                        {item?.continuous ? `${formatDate(item?.campaign_start_date)} - No Expiration` 
+                          : `${formatDate(item?.campaign_start_date)} - ${formatDate(item?.campaign_end_date)}`} 
                       </td>
 
                       <td>
