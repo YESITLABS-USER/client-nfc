@@ -23,7 +23,7 @@ const CreateEditCoupan = () => {
   const [clientId, setClientId] = useState(null);
   const [clientLocation, setClientLocation] = useState(null);
   const [finalCampaignId, setFinalCampaignId] = useState("");
-  const [scanType, setScanType] = useState(isEditMode ? data?.validity_start_date_from_valid_scan : 1);
+  const [scanType, setScanType] = useState(isEditMode ? data?.validity_start_date_from_valid_scan : 0);
   const [selectColor, setSelectColor] = useState('#000000')
   const [selectedCouponType, setSelectedCouponType] = useState("");
   const [usageLimit, setUsageLimit] = useState(isEditMode ? data?.usages_limit_no_limit == 1 ? 1 : 0 : 0);
@@ -132,30 +132,19 @@ const CreateEditCoupan = () => {
   const handleSubmit = (values) => {
     const formData = { ...values };
 
-    // Clear scan-related fields if a fixed date is selected
-    if (scanType == 2) {
+    if(formData.infinity_qty == 1){
       formData.validity_select_number = "";
       formData.validity_select_time_unit = "";
-      formData.validity_start_date_from_valid_scan = 2;
-    }
-  
-    // Clear fixed date fields if scan is selected
-    if (scanType == 1) {
+      formData.validity_start_date_from_valid_scan = 0;
       formData.validity_start_date = "";
       formData.validity_expiration_date = "";
       formData.validity_no_limit = 0;
-      formData.validity_start_date_from_valid_scan = 1;
     }
 
-        
-   if(formData.infinity_qty == 1){
-    formData.validity_select_number = "";
-    formData.validity_select_time_unit = "";
-    formData.validity_start_date_from_valid_scan = 0;
-    formData.validity_start_date = "";
-    formData.validity_expiration_date = "";
-    formData.validity_no_limit = 0;
- }
+    if(scanType == 0) {
+      formData.validity_select_number = "";
+      formData.validity_select_time_unit = "";
+    }
   
     if (usageLimit == 1) {
       formData.usages_limit_select_number = "";
@@ -173,7 +162,7 @@ const CreateEditCoupan = () => {
     }
   
     // Dispatch the action to create or edit the coupon
-    isEditMode ? dispatch(editCoupan(formData)) : dispatch(createCoupan(formData));
+    // isEditMode ? dispatch(editCoupan(formData)) : dispatch(createCoupan(formData));
   
     console.log("Form Values:", formData);
   };
@@ -203,7 +192,8 @@ const CreateEditCoupan = () => {
               <div className="creat-new-user-wrap">
                 <div className="col-lg-12">
                 <div className="row">
-                  
+
+              {/* Client Name */}    
                 <div className="col-lg-3">
                   <label>
                     <h3>Client Name</h3>
@@ -226,7 +216,8 @@ const CreateEditCoupan = () => {
                     <ErrorMessage name="client_id" component="div" className="validation-error" />
                   </label>
                 </div>
-
+              
+              {/* Client Location */}
                 <div className="col-lg-3">
                   <label>
                   <h3>Client Location</h3>
@@ -257,6 +248,7 @@ const CreateEditCoupan = () => {
                   </label>
                 </div>
 
+              {/* Campaign Name */}
                 <div className="col-lg-3">
                   <label>
                     <h3>Campaign Name</h3>
@@ -289,6 +281,7 @@ const CreateEditCoupan = () => {
                   </label>
                 </div>
 
+              {/* Coupan ID */}
                 <div className="col-lg-3">
                   <label>
                     <h3>Campaign ID</h3>
@@ -296,7 +289,8 @@ const CreateEditCoupan = () => {
                     <ErrorMessage name="campaign_id" component="div" className="validation-error" />
                   </label>
                 </div>
-
+              
+              {/* Coupan Status */}
                 <div className="col-lg-3">
                   <label>
                     <h3>Campaign Status</h3>
@@ -304,7 +298,8 @@ const CreateEditCoupan = () => {
                     <ErrorMessage name="status" component="div" className="validation-error" />  
                   </label>
                 </div>
-
+              
+              {/* Coupan ID */}
                 <div className="col-lg-3">
                 <label>
                   <h3>Coupon ID</h3>
@@ -318,7 +313,7 @@ const CreateEditCoupan = () => {
                   <ErrorMessage name="coupon_id" component="div" className="validation-error" />
                 </label>
                 </div>
-
+              {/* Coupan Name */}
                 <div className="col-lg-3">
                   <label>
                     <h3>Coupon Name</h3>
@@ -568,60 +563,7 @@ const CreateEditCoupan = () => {
                 </div>
               </div>
 
-                <div className="row" style={{ paddingTop:"40px"}}>
-                  <div className="col-lg-3">
-                    <label>
-                      <h3>Valid Scan Frequency</h3>
-                      <Field type="text" name="valid_scan_freq" />
-                      <ErrorMessage name="valid_scan_freq" component="div" className="error-message d-flex"
-                        style={{ color: "red", fontSize: "12px", paddingLeft: "10px", }}
-                      />
-                    </label>
-                  </div>
-  
-                  <div className="col-lg-3">
-                    <label>
-                    <h3>Select Time Unit</h3>
-                    <Field as="select" name="select_time_unit" onChange={(e) => {
-                      setFieldValue('select_time_unit', e.target.value);
-                      }}>
-                      <option value=""> Select Time Unit </option>
-                      <option value="1">Month</option>
-                      <option value="2">Day</option>
-                      <option value="3">Hour</option>
-                      <option value="4">Minute</option>
-                    </Field>
-                    <ErrorMessage name="select_time_unit" component="div" className="error-message d-flex"
-                      style={{ color: "red", fontSize: "12px", paddingLeft: "10px", }}
-                    />
-                    </label>
-                  </div>
-  
-                  <div className="col-lg-3">
-                    <label>
-                      <h3>Valid Scan Qty</h3>
-                      <Field type="text" name="valid_scan_qty"/>
-                      <ErrorMessage name="valid_scan_qty" component="div" className="error-message d-flex"
-                        style={{ color: "red", fontSize: "12px", paddingLeft: "10px", }}
-                      />
-                    </label>
-                  </div>
-
-                  <div className="col-lg-3">
-                    <label className="no-expariton-check">
-                      <Field type="checkbox" name="infinity_qty" checked={isInfinity} 
-                        onChange={(e)=> {
-                        setScanType(isInfinity ? 1 : 0);
-                        setIsInfinity(!isInfinity);
-                        setFieldValue("infinity_qty", e.target.checked ? 1 : 0);
-                      }} />
-                      <h3>Infinity</h3>
-                    </label>
-                  </div>
-                </div>
-
-              {/* <CouponTypeDropdown /> */}
-              
+              {/* Usage Limit */}
               <div className="bottom-coupon-form-wrap">
                 <div className="row">
                   <div className="usagelimit-access">
@@ -668,31 +610,90 @@ const CreateEditCoupan = () => {
                 </div>
               </div>
 
+            {/* Frequency */}
+              <div className="row" style={{ paddingTop:"40px"}}>
+                <div className="col-lg-3">
+                  <label>
+                    <h3>Valid Scan Frequency</h3>
+                    <Field type="text" name="valid_scan_freq" />
+                    <ErrorMessage name="valid_scan_freq" component="div" className="error-message d-flex"
+                      style={{ color: "red", fontSize: "12px", paddingLeft: "10px", }}
+                    />
+                  </label>
+                </div>
+  
+                <div className="col-lg-3">
+                  <label>
+                  <h3>Select Time Unit</h3>
+                  <Field as="select" name="select_time_unit" onChange={(e) => {
+                    setFieldValue('select_time_unit', e.target.value);
+                    }}>
+                    <option value=""> Select Time Unit </option>
+                    <option value="1">Month</option>
+                    <option value="2">Day</option>
+                    <option value="3">Hour</option>
+                    <option value="4">Minute</option>
+                  </Field>
+                  <ErrorMessage name="select_time_unit" component="div" className="error-message d-flex"
+                    style={{ color: "red", fontSize: "12px", paddingLeft: "10px", }}
+                  />
+                  </label>
+                </div>
+  
+                <div className="col-lg-3">
+                  <label>
+                    <h3>Valid Scan Qty</h3>
+                    <Field type="text" name="valid_scan_qty"/>
+                    <ErrorMessage name="valid_scan_qty" component="div" className="error-message d-flex"
+                      style={{ color: "red", fontSize: "12px", paddingLeft: "10px", }}
+                    />
+                  </label>
+                </div>
+
+                <div className="col-lg-3">
+                  <label className="no-expariton-check">
+                    <Field type="checkbox" name="infinity_qty" checked={isInfinity} 
+                      onChange={(e)=> {
+                      setScanType(isInfinity ? 1 : 0);
+                      setIsInfinity(!isInfinity);
+                      setFieldValue("infinity_qty", e.target.checked ? 1 : 0);
+                    }} />
+                    <h3>Infinity</h3>
+                  </label>
+                </div>
+              </div>
+
+            {/* Valid Scan or GAP*/}
               <div className="bottom-coupon-form-wrap">
                 <div className="col-lg-12">
                   <div className="row">
                     <div className="usagelimit-access">
                       <div className="col-lg-3">
                         <label className="no-expariton-check">
-                          <Field 
-                            type="radio" 
+                          <Field
+                            type="checkbox"
                             name="validity_start_date_from_valid_scan"
-                            value={1} disabled={isInfinity}
-                            checked={scanType == 1}  // Added checked prop
-                            onChange={() => setScanType(1)}
+                            value={scanType}
+                            disabled={isInfinity}  // Disable based on isInfinity state
+                            checked={scanType === 1}  // Corrected comparison
+                            onChange={() => {
+                              setScanType(scanType === 1 ? 0 : 1)
+                              setFieldValue("validity_start_date_from_valid_scan", scanType === 1 ? 0 : 1);
+                            }}  // Toggle scanType between 0 and 1
                           />
                           <h3>Start date from valid scan</h3>
                         </label>
                       </div>
+
                       <div className="col-lg-3">
                         <label>
                           <h3>Select Number</h3>
                           <Field
-                            type="text" 
+                            type="text"
                             name="validity_select_number"
-                            placeholder="Enter Number" 
+                            placeholder="Enter Number"
                             disabled={scanType !== 1 || isInfinity}
-                            value={scanType == 1 ? values.validity_select_number : ""}
+                            value={scanType === 1 ? values.validity_select_number : ""}
                           />
                         </label>
                       </div>
@@ -700,13 +701,17 @@ const CreateEditCoupan = () => {
                       <div className="col-lg-3">
                         <label>
                           <h3>Select Time Unit</h3>
-                          <Field as="select" name="validity_select_time_unit" disabled={scanType !== 1 || isInfinity}
-                            value={scanType == 1 ? values.validity_select_time_unit : ""} >
-                            <option value=""> Select Time Unit</option>
-                            <option value="month"> Month </option>
-                            <option value="day"> Days </option>
-                            <option value="hour"> Hours </option>
-                            <option value="minute"> Minutes </option>
+                          <Field
+                            as="select"
+                            name="validity_select_time_unit"
+                            disabled={scanType !== 1 || isInfinity}
+                            value={scanType === 1 ? values.validity_select_time_unit : ""}
+                          >
+                            <option value="">Select Time Unit</option>
+                            <option value="month">Month</option>
+                            <option value="day">Days</option>
+                            <option value="hour">Hours</option>
+                            <option value="minute">Minutes</option>
                           </Field>
                         </label>
                       </div>
@@ -715,19 +720,13 @@ const CreateEditCoupan = () => {
                 </div>
               </div>
 
+            {/* Start End Date */}
               <div className="bottom-coupon-form-wrap">
                 <div className="col-lg-12">
                   <div className="row">
                     <div className="usagelimit-access">
                       <label className="no-expariton-check">
-                        <Field 
-                          type="radio" 
-                          name="validity_start_date_from_valid_scan"
-                          value={2} disabled={isInfinity}
-                          checked={scanType == 2}  // Added checked prop
-                          onChange={() => setScanType(2)}
-
-                        />
+                        
                         <div className="col-lg-3">
                           <label className="start-end-date">
                             <h3>Start Date</h3>
@@ -735,7 +734,7 @@ const CreateEditCoupan = () => {
                               format="dd/MM/yyyy" 
                               oneTap 
                               placeholder="Enter start date"
-                              disabled={scanType !== 2 || isInfinity}
+                              disabled={isInfinity}
                               onChange={(date) => setFieldValue("validity_start_date", convertToYYYYMMDD(date))}
                               value={values?.validity_start_date ? new Date(values?.validity_start_date) : null}
                             />  
@@ -750,11 +749,10 @@ const CreateEditCoupan = () => {
                               format="dd/MM/yyyy" 
                               oneTap 
                               placeholder="Enter expiration date"
-                              disabled={scanType !== 2 || values.validity_no_limit}
+                              disabled={values.validity_no_limit || isInfinity}
                               onChange={(date) => setFieldValue("validity_expiration_date", convertToYYYYMMDD(date))}
                               value={values.validity_expiration_date ? new Date(values.validity_expiration_date) : null}
                             />  
-
                             <img src="/images/menu-icons/calender-icon.png" alt="" />
                           </label>
                         </div>
@@ -763,8 +761,7 @@ const CreateEditCoupan = () => {
                             <Field
                               type="checkbox"
                               name="validity_no_limit"
-                              disabled={scanType !== 2 || isInfinity}
-
+                              disabled={isInfinity}
                               onChange={(e) => {
                                 setFieldValue("validity_no_limit", e.target.checked ? 1 : 0);
                               }}
