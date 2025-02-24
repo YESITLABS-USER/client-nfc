@@ -162,7 +162,7 @@ const CreateEditCoupan = () => {
     }
   
     // Dispatch the action to create or edit the coupon
-    // isEditMode ? dispatch(editCoupan(formData)) : dispatch(createCoupan(formData));
+    isEditMode ? dispatch(editCoupan(formData)) : dispatch(createCoupan(formData));
   
     console.log("Form Values:", formData);
   };
